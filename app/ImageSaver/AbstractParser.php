@@ -1,6 +1,6 @@
 <?php
 
-class ImageSaver_AbstractParser
+abstract class ImageSaver_AbstractParser
 {
 	use Logger_Trait;
 
