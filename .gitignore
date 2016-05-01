@@ -1,1 +1,3 @@
 .*
+!.keepdir
+!.travis.yml

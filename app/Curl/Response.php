@@ -45,14 +45,33 @@ class Curl_Response
 
 	public function absolutizeUrl($url)
 	{
+		$url = trim($url);
+		if (!$url) {
+			return $this->finalUrl;
+		}
+
 		$urlInfo = parse_url($url);
 
+		//already has scheme
 		if (!empty($urlInfo['scheme'])) {
 			return $url;
 		}
+
+		$baseUrlInfo = parse_url($this->finalUrl);
+
+		//use current scheme
+		if (substr($url, 0, 2) == '//') {
+			return $baseUrlInfo['scheme'] . ':' . $url;
+		}
 		else {
-			$baseUrlInfo = parse_url($this->finalUrl);
-			return $baseUrlInfo['scheme'] . '://' . $baseUrlInfo['host'] . '/' . ltrim($url, '/');
+			//relative
+			if ($url[0] != '/') {
+				return $baseUrlInfo['scheme'] . '://' . $baseUrlInfo['host'] . rtrim($baseUrlInfo['path'], '/') . '/' . $url;
+			}
+			//absolute
+			else {
+				return $baseUrlInfo['scheme'] . '://' . $baseUrlInfo['host'] . '/' . ltrim($url, '/');
+			}
 		}
 	}
 }
