@@ -75,7 +75,7 @@ abstract class ImageSaver_AbstractParser
 		foreach ($elements as $element) {
 			$href = trim($element->getAttribute('href'));
 			$href = preg_replace('/#.*/', '', $href); //remove anchors
-			if (preg_match('/^(javascript|mail):/i', $href)) { //skip js and mail links
+			if (preg_match('/^(javascript|mailto):/i', $href)) { //skip js and mail links
 				continue;
 			}
 			$links[] = $response->absolutizeUrl($href);

@@ -6,7 +6,7 @@ class ImageSaver_AbstractParserTest extends PHPUnit_Framework_TestCase
 	{
 		$body = "
 			<h2>test</h2>
-			<a href='mail:mail@gmail.com'>
+			<a href='mailto:mail@gmail.com'>
 			<a href='javascript:void(0)'>
 			<a href='http://google.com/'>
 			<a href='http://google.com/'>
