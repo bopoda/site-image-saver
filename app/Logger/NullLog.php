@@ -1,6 +1,6 @@
 <?php
 
-abstract class Logger_NullLog extends Logger_AbstractLog
+class Logger_NullLog extends Logger_AbstractLog
 {
 	public function write($message, $newLine = true)
 	{

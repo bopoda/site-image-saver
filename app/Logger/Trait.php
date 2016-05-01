@@ -12,7 +12,7 @@ trait Logger_Trait
 	public function getLog()
 	{
 		if (!$this->log) {
-			$this->log = new Logger_ConsoleLog();
+			$this->log = new Logger_NullLog;
 		}
 
 		return $this->log;
