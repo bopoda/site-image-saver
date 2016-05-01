@@ -8,7 +8,7 @@ CREATE TABLE `images` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `domain` varchar(100) NOT NULL,
   `img_url` varchar(1024) NOT NULL,
-  `img_url_sha1` binary(16) NOT NULL,
+  `img_url_sha1` char(40) NOT NULL,
   `image` longblob NOT NULL,
   `added_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -25,8 +25,19 @@ CREATE TABLE `images` (
 <li><code>php cli.php --domain=www.domain.com --maxImages=100</code>  #you can limit images count</li>
 </ul>
 
+<h3>Plugins</h3>
+<div>Plugins should implement ImageSaver_PluginInterface.</div>
+<div>Example:</div>
+<pre>
+$imageSaver = new ImageSaver_Parser();
+$imageSaver->setLog(new Logger_ConsoleLog());
+$imageSaver
+	->registerPlugin(new Plugin_Name())
+	->parse($domain);
+</pre>
+
 <div>TODO:</div>
 <ol>
-  <li>Учитывать, что ссылки страницы могут строиться относительно &lt;base href=""&gt;, если такой тег задан в head страницы.</li>
-  <li>Приводить строки к utf8 перед работой с DOMDocument либо использовать регулярки</li>
+  <li>Учитывать, что ссылки страницы могут строиться относительно &lt;base href=""&gt;, если такой тег задан в head страницы;</li>
+  <li>Приводить строки к utf8 перед работой с DOMDocument либо использовать регулярки.</li>
 </ol>
