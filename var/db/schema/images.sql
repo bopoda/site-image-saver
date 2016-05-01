@@ -1,9 +1,3 @@
-# site-image-saver
-
-[![Build Status](https://travis-ci.org/bopoda/site-image-saver.svg?branch=master)](https://travis-ci.org/bopoda/site-image-saver)
-
-<div>sql:</div>
-<pre>
 CREATE TABLE `images` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `domain` varchar(100) NOT NULL,
@@ -16,4 +10,3 @@ CREATE TABLE `images` (
   UNIQUE KEY `img_url_md5` (`img_url_md5`),
   KEY `domain` (`domain`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-</pre>

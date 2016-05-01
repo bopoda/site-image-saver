@@ -11,6 +11,7 @@ class ImageSaver_Parser implements ImageSaver_Interface
 	private $baseHost;
 	private $allInternalLinks = array();
 	private $visitedInternalLinks = array();
+	private $processedImagesSrc = array();
 
 	public function parse($domain)
 	{
@@ -41,19 +42,33 @@ class ImageSaver_Parser implements ImageSaver_Interface
 			$internalLinks = $this->getInternalLinks($links);
 			$this->addNewInternalLinksToProcessing($internalLinks);
 
-			$this->writeToLog("$url - " . count($internalLinks) . ' internal link(s)');
+			$urlParts = parse_url($response->getFinalUrl());
+			if (strnatcasecmp($urlParts['host'], $this->baseHost) !== 0) { // skip other domains
+				$this->writeToLog($url . ' redirected to other domain ' . $response->getFinalUrl() . '. Skip.');
+				continue;
+			}
+
+			$images = $this->parseAllImagesLinks($response);
+			$images = $this->getInternalLinks($images);
+
+			$this->writeToLog("$url has " . count($internalLinks) . ' internal link(s), ' . count($images) . ' internal image(s)');
+
+			$this->saveImages($this->baseHost, $images);
 		} while (
 			$this->hasNotVisitedLinks()
 			&& !$this->hasExceededMaxIterations()
 			&& !$this->hasExceededMaxImages()
 		);
+
+		$this->writeToLog("Finally, saved {$this->amountSavedImages} image(s) from {$this->baseHost}.");
 	}
 
-	public function parseAllImages(Curl_Response $response)
+	public function parseAllImagesLinks(Curl_Response $response)
 	{
 		$domDocument = new DOMDocument();
 		$internalErrors = libxml_use_internal_errors(true);
-		$domDocument->loadHTML($response->getBody());
+		$body = $this->removeHTMLComments($response->getBody());
+		$domDocument->loadHTML($body);
 		libxml_use_internal_errors($internalErrors);
 		$elements = $domDocument->getElementsByTagName('img');
 
@@ -80,6 +95,39 @@ class ImageSaver_Parser implements ImageSaver_Interface
 		$this->maxImages = $maxImages;
 
 		return $this;
+	}
+
+	private function saveImages($domain, $images)
+	{
+		foreach ($images as $src) {
+			if (in_array($src, $this->processedImagesSrc)) {
+				continue;
+			}
+
+			$imgBinary = file_get_contents($src);
+
+			if ($this->isBinary($imgBinary)) {
+				$images = new Model\Images();
+				$images->saveImage($domain, $src, $imgBinary);
+				$this->amountSavedImages++;
+			}
+			else {
+				$this->writeToLog("img $src is not a binary");
+			}
+
+			$this->processedImagesSrc[] = $src;
+		}
+	}
+
+	/**
+	 * The simplest check if a binary data
+	 *
+	 * @param string $imgBinary
+	 * @return bool
+	 */
+	private function isBinary($imgBinary)
+	{
+		return (bool) preg_match('~[^\x20-\x7E\t\r\n]~', $imgBinary);
 	}
 
 	private function hasExceededMaxIterations()
@@ -115,7 +163,8 @@ class ImageSaver_Parser implements ImageSaver_Interface
 	{
 		$domDocument = new DOMDocument();
 		$internalErrors = libxml_use_internal_errors(true);
-		$domDocument->loadHTML($response->getBody());
+		$body = $this->removeHTMLComments($response->getBody());
+		$domDocument->loadHTML($body);
 		libxml_use_internal_errors($internalErrors);
 		$elements = $domDocument->getElementsByTagName('a');
 
@@ -154,6 +203,11 @@ class ImageSaver_Parser implements ImageSaver_Interface
 		}
 
 		return $internalLinks;
+	}
+
+	private function removeHTMLComments($string)
+	{
+		return preg_replace('/<!--.*?-->/si', '', $string);
 	}
 }
 

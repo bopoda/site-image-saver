@@ -4,7 +4,7 @@ class Autoloader
 {
 	public static function autoload($className)
 	{
-		$classPath = __DIR__ . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+		$classPath = __DIR__ . DIRECTORY_SEPARATOR . str_replace(array('_', '\\'), DIRECTORY_SEPARATOR, $className) . '.php';
 		if (file_exists($classPath)) {
 			require_once $classPath;
 		}
