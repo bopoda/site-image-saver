@@ -19,6 +19,14 @@ class ImageSaver_AbstractParser
 	}
 
 	/**
+	 * @return int
+	 */
+	public function getIteration()
+	{
+		return $this->currentIteration;
+	}
+
+	/**
 	 * @return bool
 	 */
 	protected function hasExceededMaxIterations()
@@ -37,14 +45,6 @@ class ImageSaver_AbstractParser
 	protected function nextIteration()
 	{
 		$this->currentIteration++;
-	}
-
-	/**
-	 * @return int
-	 */
-	protected function getIteration()
-	{
-		return $this->currentIteration;
 	}
 
 	/**

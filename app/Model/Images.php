@@ -25,6 +25,17 @@ class Images
 		));
 	}
 
+	public function fetchCountByDomain($domain)
+	{
+		$sql = "SELECT COUNT(*) FROM {$this->getTableName()} WHERE domain = :domain";
+		$preparedResult = DB::getConnection()->prepare($sql);
+		$preparedResult->execute(array(
+			':domain' => $domain,
+		));
+
+		return $preparedResult->fetchColumn(0);
+	}
+
 	private function getImgUrlHash($imgUrl)
 	{
 		return md5(mb_strtolower(preg_replace('@^https?://@i', '', trim($imgUrl))), true);

@@ -12,6 +12,7 @@ sudo: false
 install:
   - echo "DROP DATABASE IF EXISTS test" | mysql -h127.0.0.1 -uroot;
   - echo "CREATE DATABASE test" | mysql -h127.0.0.1 -uroot;
+  - cat var/db/schema/images.sql | mysql -h127.0.0.1 -uroot test;
 
 script:
   - phpunit --bootstrap=tests/bootstrap.php tests/
