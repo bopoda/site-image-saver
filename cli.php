@@ -11,6 +11,7 @@ $maxIterations = $cli->getParameterValue('maxIterations');
 $imageSaver = new ImageSaver_Parser();
 $imageSaver->setLog(new Logger_ConsoleLog());
 $imageSaver
+	->registerPlugin(new Plugin_Frontpage())
 	->setMaxImages($maxImages)
 	->setMaxIterations($maxIterations)
 	->parse($domain);
