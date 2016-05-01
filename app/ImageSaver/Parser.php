@@ -8,12 +8,16 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 	private $visitedInternalLinks = array();
 	private $processedImagesSrc = array();
 
+	/**
+	 * @param string $domain
+	 * @throws Exception
+	 */
 	public function parse($domain)
 	{
 		$domain = preg_match('@^https?://@', $domain) ? $domain : ('http://' . $domain);
 		$urlParts = parse_url($domain);
 		if (!$urlParts) {
-			throw new Exception('bad domain');
+			throw new Exception('bad domain name');
 		}
 		$baseHost = $urlParts['host'];
 		$rootUrl = $urlParts['scheme'] . '://' . $urlParts['host'] . '/';
@@ -80,6 +84,7 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 			if (in_array($src, $this->processedImagesSrc)) {
 				continue;
 			}
+			$this->processedImagesSrc[] = $src;
 
 			$imgBinary = file_get_contents($src);
 
@@ -88,11 +93,10 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 				$images->saveImage($domain, $src, $imgBinary);
 				$this->amountSavedImages++;
 				$savedImages[] = $src;
-			} else {
+			}
+			else {
 				$this->writeToLog("img $src is not a binary");
 			}
-
-			$this->processedImagesSrc[] = $src;
 		}
 
 		if ($savedImages) {
