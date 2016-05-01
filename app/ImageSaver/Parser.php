@@ -14,6 +14,9 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 	 */
 	public function parse($domain)
 	{
+		if (!$domain) {
+			throw new Exception('got empty domain');
+		}
 		$domain = preg_match('@^https?://@', $domain) ? $domain : ('http://' . $domain);
 		$urlParts = parse_url($domain);
 		if (!$urlParts) {

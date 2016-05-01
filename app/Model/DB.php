@@ -10,6 +10,16 @@ class DB
 
 	private function __construct() {}
 
+	public function __destruct()
+	{
+		$this->disconnect();
+	}
+
+	public function disconnect()
+	{
+		static::$connection = NULL;
+	}
+
 	/**
 	 *
 	 * @return PDO
