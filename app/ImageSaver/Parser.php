@@ -2,6 +2,8 @@
 
 class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_Interface
 {
+	use ImageSaver_PluginAccessTrait;
+
 	private $maxImages;
 	private $amountSavedImages = 0;
 	private $allInternalLinks = array();
@@ -27,6 +29,34 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 
 		$this->allInternalLinks[] = $rootUrl;
 
+		$this->onStart();
+
+		try {
+			$this->parsePages($baseHost);
+		}
+		catch (Exception $e) {
+			$this->onError();
+			throw $e;
+		}
+
+		$this->onFinish();
+
+		$this->writeToLog("Finally, saved {$this->amountSavedImages} image(s) from {$baseHost} using {$this->getIteration()} iteration(s).");
+	}
+
+	/**
+	 * @param int $maxImages
+	 * @return $this
+	 */
+	public function setMaxImages($maxImages)
+	{
+		$this->maxImages = $maxImages;
+
+		return $this;
+	}
+
+	private function parsePages($baseHost)
+	{
 		$curlClient = new Curl_Client();
 		do {
 			$this->nextIteration();
@@ -41,6 +71,8 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 				$this->writeToLog("$url exception: " . $e->getMessage());
 				continue;
 			}
+
+			$this->processResponse($response);
 
 			$links = $this->parseAllLinks($response);
 
@@ -64,19 +96,6 @@ class ImageSaver_Parser extends ImageSaver_AbstractParser implements ImageSaver_
 			&& !$this->hasExceededMaxIterations()
 			&& !$this->hasExceededMaxImages()
 		);
-
-		$this->writeToLog("Finally, saved {$this->amountSavedImages} image(s) from {$baseHost} using {$this->getIteration()} iteration(s).");
-	}
-
-	/**
-	 * @param int $maxImages
-	 * @return $this
-	 */
-	public function setMaxImages($maxImages)
-	{
-		$this->maxImages = $maxImages;
-
-		return $this;
 	}
 
 	private function saveImages($domain, $images)

@@ -5,6 +5,7 @@ class Curl_Response
 	private $body;
 	private $code = 200;
 	private $finalUrl;
+	private $initialUrl;
 	private $headers;
 
 	public function getBody()
@@ -20,6 +21,11 @@ class Curl_Response
 	public function getFinalUrl()
 	{
 		return $this->finalUrl;
+	}
+
+	public function getInitialUrl()
+	{
+		return $this->initialUrl;
 	}
 
 	public function setBody($body)
@@ -39,6 +45,13 @@ class Curl_Response
 	public function setFinalUrl($finalUrl)
 	{
 		$this->finalUrl = $finalUrl;
+
+		return $this;
+	}
+
+	public function setInitialUrl($initialUrl)
+	{
+		$this->initialUrl = $initialUrl;
 
 		return $this;
 	}

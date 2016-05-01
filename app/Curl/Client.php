@@ -22,6 +22,7 @@ class Curl_Client
 		$response = new Curl_Response();
 		$response
 			->setBody($html)
+			->setInitialUrl($url)
 			->setFinalUrl($curlInfo['url'])
 			->setCode($curlInfo['http_code']);
 
